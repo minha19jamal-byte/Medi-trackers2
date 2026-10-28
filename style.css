@@ -1,0 +1,80 @@
+:root{--teal:#2B8A7E}
+html{font-size:18px;transition:font-size .2s}
+body{-webkit-tap-highlight-color:transparent}
+.shadow-soft{box-shadow:0 10px 30px -12px rgba(23,53,58,.25)}
+.chip{background:#fff;border-radius:999px;padding:.5rem 1rem;font-weight:800;min-height:48px;box-shadow:0 4px 14px -8px rgba(23,53,58,.4)}
+.btn-main,.btn-ghost{display:block;width:100%;min-height:64px;border-radius:1.5rem;font-size:1.25rem;font-weight:800;transition:transform .1s}
+.btn-main{background:var(--teal);color:#fff;box-shadow:0 10px 24px -10px rgba(43,138,126,.8)}
+.btn-ghost{background:#E7E3F8;color:#17353A}
+.btn-main:active,.btn-ghost:active,.chip:active{transform:scale(.97)}
+.lbl{display:block;font-weight:800;font-size:1.1rem;margin-bottom:.35rem}
+.field{width:100%;min-height:56px;border-radius:1rem;border:3px solid #D5EBE6;background:#F7FBFA;padding:.5rem 1rem;font-size:1.2rem;font-weight:700}
+.icon-opt{width:56px;height:56px;border-radius:1rem;font-size:1.8rem;background:#EEF5F3;border:3px solid transparent}
+.icon-opt[aria-pressed=true]{border-color:var(--teal);background:#D5EBE6}
+.card{background:#fff;border-radius:2rem;padding:1.1rem;box-shadow:0 10px 30px -14px rgba(23,53,58,.3);border:3px solid transparent;transition:border-color .2s,background .2s}
+.card.due{border-color:#F7D774}
+.card.done{background:#E3F3EE}
+.card.refill-low{border-color:#E57373}
+.take{min-height:64px;border-radius:1.25rem;font-weight:800;font-size:1.2rem;flex:1;background:#2B8A7E;color:#fff}
+.card.done .take{background:#fff;color:#1F6B61;border:3px solid #2B8A7E}
+.mini{min-width:56px;min-height:64px;border-radius:1.25rem;background:#E7E3F8;font-size:1.4rem}
+.mini.refill-btn{background:#FFF3E0;font-size:1.2rem}
+#ring{transition:stroke-dashoffset .6s ease}
+.pop{animation:pop .4s ease}
+@keyframes pop{50%{transform:scale(1.04)}}
+:focus-visible{outline:4px solid #7A6BD1;outline-offset:3px}
+
+/* ── Two-column layout ─────────────────── */
+.layout-grid{display:flex;flex-direction:column;gap:1.5rem}
+.left-col,.right-col{min-width:0}
+@media(min-width:768px){
+  .layout-grid{flex-direction:row;align-items:flex-start}
+  .left-col{position:sticky;top:1.25rem;flex:0 0 380px;max-width:380px}
+  .right-col{flex:1 1 0%;min-width:0}
+}
+@media(min-width:1024px){
+  .left-col{flex:0 0 420px;max-width:420px}
+}
+
+/* ── Stat cards ────────────────────────── */
+.stat-card{background:#fff;border-radius:1.5rem;padding:1rem .5rem;display:flex;flex-direction:column;align-items:center;gap:.25rem;box-shadow:0 8px 24px -10px rgba(23,53,58,.2)}
+.stat-icon{font-size:1.6rem}
+.stat-value{font-size:1.5rem;font-weight:800;color:var(--teal)}
+.stat-label{font-size:.85rem;font-weight:700;opacity:.65;text-align:center}
+
+/* ── Efficiency ────────────────────────── */
+.eff-item{display:flex;flex-direction:column;align-items:center;gap:.15rem}
+.eff-value{font-size:1.7rem;font-weight:800;color:var(--teal)}
+.eff-label{font-size:.8rem;font-weight:700;opacity:.65}
+
+/* ── Calendar ──────────────────────────── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.cal-title{font-weight:800;font-size:1.1rem}
+.cal-nav{width:40px;height:40px;border-radius:50%;background:#EEF5F3;font-size:1.3rem;font-weight:800;display:grid;place-items:center}
+.cal-nav:active{transform:scale(.93)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day-header{text-align:center;font-size:.7rem;font-weight:800;opacity:.5;padding:2px 0}
+.cal-cell{text-align:center;font-size:.85rem;font-weight:700;border-radius:.6rem;padding:6px 2px;line-height:1}
+.cal-cell.empty{visibility:hidden}
+.cal-cell.complete{background:#C8E6C9;color:#2E7D32}
+.cal-cell.partial{background:#FFF9C4;color:#F9A825}
+.cal-cell.missed{background:#FDDEDE;color:#C62828}
+.cal-cell.future{background:#f5f5f5;color:#bbb}
+.cal-cell.none{color:#ccc}
+.cal-cell.is-today{box-shadow:0 0 0 2.5px var(--teal);font-weight:800}
+
+/* ── Frequency / day pickers (dialog) ──── */
+.freq-opt,.day-opt,.date-opt{min-height:44px;border-radius:1rem;font-weight:800;font-size:.95rem;padding:.4rem .85rem;background:#EEF5F3;border:3px solid transparent}
+.freq-opt[aria-pressed=true],.day-opt[aria-pressed=true],.date-opt[aria-pressed=true]{border-color:var(--teal);background:#D5EBE6;color:#1F6B61}
+.date-opt{min-height:38px;min-width:38px;padding:.25rem;font-size:.85rem;border-radius:.7rem}
+
+/* ── Refill indicator on card ──────────── */
+.refill-info{display:flex;align-items:center;gap:.4rem;font-size:.9rem;font-weight:700;margin-top:.35rem}
+.refill-bar{flex:1;height:6px;border-radius:3px;background:#D5EBE6;overflow:hidden}
+.refill-fill{height:100%;border-radius:3px;background:var(--teal);transition:width .3s}
+.refill-fill.low{background:#E57373}
+
+/* ── Frequency badge on card ───────────── */
+.freq-badge{display:inline-block;background:#E7E3F8;border-radius:999px;padding:.1rem .6rem;font-size:.75rem;font-weight:800;margin-top:.2rem}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

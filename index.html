@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Medicines</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Nunito','system-ui','sans-serif']},
+colors:{mist:'#EEF5F3',ink:'#17353A',teal:{DEFAULT:'#2B8A7E',dark:'#1F6B61',soft:'#D5EBE6'},lilac:'#E7E3F8',sun:'#F7D774',rose:'#FDDEDE'}}}};
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-mist text-ink font-sans min-h-screen">
+
+<main class="max-w-6xl mx-auto px-4 pb-32 pt-5">
+
+  <header class="flex items-start justify-between gap-3 mb-5">
+    <div>
+      <h1 id="greeting" class="text-3xl font-extrabold leading-tight"></h1>
+      <p id="date" class="text-lg opacity-75 font-bold"></p>
+    </div>
+    <div class="flex gap-2 items-center" role="group" aria-label="Controls">
+      <button id="remind" class="chip">🔔 Reminders</button>
+      <button id="smaller" class="chip" aria-label="Smaller text">Zoom out−</button>
+      <button id="bigger" class="chip" aria-label="Bigger text">Zoom in+</button>
+    </div>
+  </header>
+
+  <div id="alert" class="hidden mb-4 rounded-3xl bg-sun p-4 text-xl font-extrabold flex items-center justify-between gap-3" role="alert">
+    <span id="alertText"></span>
+    <button id="alertClose" class="chip bg-white">OK</button>
+  </div>
+
+  <!-- Two-column grid -->
+  <div class="layout-grid">
+
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+
+      <section class="rounded-[2rem] bg-white p-5 shadow-soft flex items-center gap-5" aria-live="polite">
+        <div class="relative w-28 h-28 shrink-0">
+          <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#D5EBE6" stroke-width="14"/>
+            <circle id="ring" cx="60" cy="60" r="52" fill="none" stroke="#2B8A7E" stroke-width="14" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div id="ringText" class="absolute inset-0 grid place-items-center text-2xl font-extrabold"></div>
+        </div>
+        <div>
+          <p id="summary" class="text-2xl font-extrabold leading-snug"></p>
+          <p id="sub" class="text-lg opacity-75 font-bold"></p>
+        </div>
+      </section>
+
+      <!-- Stats Cards -->
+      <section id="statsCards" class="hidden mt-4 grid grid-cols-3 gap-3" aria-label="Tracking overview">
+        <div class="stat-card">
+          <span class="stat-icon">📅</span>
+          <span id="monthVal" class="stat-value">0/0</span>
+          <span class="stat-label">This Month</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">📆</span>
+          <span id="weekVal" class="stat-value">0/0</span>
+          <span class="stat-label">This Week</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">☀️</span>
+          <span id="dayVal" class="stat-value">0/0</span>
+          <span class="stat-label">Today</span>
+        </div>
+      </section>
+
+      <!-- Calendar -->
+      <section id="calSection" class="hidden mt-4 rounded-[2rem] bg-white p-5 shadow-soft" aria-label="Calendar">
+        <div id="calContent"></div>
+      </section>
+
+      <!-- Efficiency -->
+      <section id="efficiency" class="hidden mt-4 rounded-[2rem] bg-white p-5 shadow-soft" aria-label="Efficiency report">
+        <h2 class="text-xl font-extrabold mb-4 flex items-center gap-2">📊 Your Efficiency</h2>
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="eff-item">
+            <span id="effRate" class="eff-value">0%</span>
+            <span class="eff-label">Adherence</span>
+          </div>
+          <div class="eff-item">
+            <span id="effStreak" class="eff-value">0</span>
+            <span class="eff-label">Streak 🔥</span>
+          </div>
+          <div class="eff-item">
+            <span id="effBest" class="eff-value">0</span>
+            <span class="eff-label">Best Streak</span>
+          </div>
+        </div>
+        <div class="mt-4 h-4 rounded-full bg-teal-soft overflow-hidden">
+          <div id="effFill" class="h-full rounded-full bg-teal transition-all duration-500" style="width:0%"></div>
+        </div>
+        <p id="effMsg" class="mt-3 text-lg font-bold text-center opacity-80"></p>
+      </section>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+      <h2 class="text-xl font-extrabold mb-3 opacity-70">💊 Today's Medicines</h2>
+      <section id="list" class="space-y-4" aria-label="Today's medicines"></section>
+      <div class="mt-4">
+        <button id="add" class="btn-main w-full">＋ Add a medicine</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Add / Edit Dialog -->
+<dialog id="dlg" class="rounded-[2rem] p-0 w-[92vw] max-w-md shadow-soft backdrop:bg-ink/40">
+  <form id="form" method="dialog" class="p-6 space-y-5 bg-white text-ink max-h-[85vh] overflow-y-auto">
+    <h2 id="dlgTitle" class="text-2xl font-extrabold">New medicine</h2>
+    <label class="block">
+      <span class="lbl">Name</span>
+      <input id="name" required maxlength="40" placeholder="e.g. Vitamin C" class="field">
+    </label>
+    <label class="block">
+      <span class="lbl">How much? <span class="opacity-60 font-bold">(optional)</span></span>
+      <input id="dose" maxlength="40" placeholder="e.g. 1 tablet, 5 ml" class="field">
+    </label>
+    <label class="block">
+      <span class="lbl">What time?</span>
+      <input id="time" type="time" required value="08:00" class="field">
+    </label>
+
+    <!-- Frequency -->
+    <fieldset>
+      <legend class="lbl">How often?</legend>
+      <div id="freqPicker" class="flex gap-2 flex-wrap">
+        <button type="button" class="freq-opt" data-freq="daily" aria-pressed="true">Every day</button>
+        <button type="button" class="freq-opt" data-freq="weekly" aria-pressed="false">Weekly</button>
+        <button type="button" class="freq-opt" data-freq="monthly" aria-pressed="false">Monthly</button>
+      </div>
+    </fieldset>
+
+    <!-- Weekly day picker -->
+    <div id="weekPicker" class="hidden">
+      <span class="lbl">Which days?</span>
+      <div class="flex gap-2 flex-wrap">
+        <button type="button" class="day-opt" data-d="1" aria-pressed="false">Mon</button>
+        <button type="button" class="day-opt" data-d="2" aria-pressed="false">Tue</button>
+        <button type="button" class="day-opt" data-d="3" aria-pressed="false">Wed</button>
+        <button type="button" class="day-opt" data-d="4" aria-pressed="false">Thu</button>
+        <button type="button" class="day-opt" data-d="5" aria-pressed="false">Fri</button>
+        <button type="button" class="day-opt" data-d="6" aria-pressed="false">Sat</button>
+        <button type="button" class="day-opt" data-d="0" aria-pressed="false">Sun</button>
+      </div>
+    </div>
+
+    <!-- Monthly date picker -->
+    <div id="monthPicker" class="hidden">
+      <span class="lbl">Which dates?</span>
+      <div id="monthDates" class="grid grid-cols-7 gap-1"></div>
+    </div>
+
+    <!-- Refill tracking -->
+    <fieldset>
+      <legend class="lbl">Refill tracking <span class="opacity-60 font-bold">(optional)</span></legend>
+      <div class="flex gap-3">
+        <label class="flex-1">
+          <span class="text-sm font-bold opacity-60">Total pills</span>
+          <input id="refillTotal" type="number" min="0" step="1" placeholder="e.g. 30" class="field">
+        </label>
+        <label class="flex-1">
+          <span class="text-sm font-bold opacity-60">Current left</span>
+          <input id="refillLeft" type="number" min="0" step="1" placeholder="e.g. 25" class="field">
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="lbl">Pick a picture</legend>
+      <div id="icons" class="flex flex-wrap gap-2"></div>
+    </fieldset>
+    <div class="flex gap-3 pt-1">
+      <button type="button" id="cancel" class="btn-ghost flex-1">Cancel</button>
+      <button type="submit" class="btn-main flex-1">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Refill dialog -->
+<dialog id="refillDlg" class="rounded-[2rem] p-0 w-[92vw] max-w-sm shadow-soft backdrop:bg-ink/40">
+  <form id="refillForm" method="dialog" class="p-6 space-y-5 bg-white text-ink">
+    <h2 class="text-2xl font-extrabold">🔄 Refill Medicine</h2>
+    <p id="refillName" class="text-lg font-bold opacity-80"></p>
+    <label class="block">
+      <span class="lbl">New pill count</span>
+      <input id="refillCount" type="number" min="1" step="1" required class="field">
+    </label>
+    <div class="flex gap-3 pt-1">
+      <button type="button" id="refillCancel" class="btn-ghost flex-1">Cancel</button>
+      <button type="submit" class="btn-main flex-1">Refill</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
